@@ -37,27 +37,6 @@ void initBoardCells()
     // return boardCell;
 }
 
-// int roll(int range){
-
-//     int value;
-//     int values[10];
-//     srand(time(0));
-//     int j = 0;
-//     for ( j < range; j++;){
-//         value = rand() % 6;
-//         values[j] = value;
-//         //printf("%d\n,", values[j]);
-//     }
-
-//         //assigning random values to the roll-round value
-//         Yellow.roll_val = values[1];
-//         Blue.roll_val = values[2];
-//         Red.roll_val = values[3];
-//         Green.roll_val = values[4];
-
-//     return values;
-// }
-
 // sort any array
 void sort_arr(int arr[], int lenght)
 {
@@ -85,6 +64,11 @@ void print_arr(int arr[], int length)
     printf("\n");
 }
 
+void _start(int x){
+    roll(0);
+
+}
+
 int roll(int player_id)
 {
     srand(time(0));
@@ -93,34 +77,31 @@ int roll(int player_id)
     switch (player_id)
     {
     case 0:
-        Yellow.roll_val = random;
-        Blue.roll_val = random;
-        Red.roll_val = random;
-        Green.roll_val = random;
-        int order[4] = {Yellow.roll_val, Blue.roll_val, Red.roll_val, Green.roll_val};
+        order[0] = Yellow.roll_val = random;
+        order[1] = Blue.roll_val = random;
+        order[2] = Red.roll_val = random;
+        order[3] = Green.roll_val = random;
+    
         break;
     case 1:
-        Blue.roll_val = random;
-        Red.roll_val = random;
-        Green.roll_val = random;
-        Yellow.roll_val = random;
-        int order[4] = {Blue.roll_val, Red.roll_val, Green.roll_val, Yellow.roll_val};
+        order[0] = Blue.roll_val = random;
+        order[1] = Red.roll_val = random;
+        order[2] = Green.roll_val = random;
+        order[3] = Yellow.roll_val = random;
         break;
     case 2:
-        Red.roll_val = random;
-        Green.roll_val = random;
-        Yellow.roll_val = random;
-        Blue.roll_val = random;
-        int order[4] = {Red.roll_val, Green.roll_val, Yellow.roll_val, Blue.roll_val};
+        order[0] = Red.roll_val = random;
+        order[1] = Green.roll_val = random;
+        order[2] = Yellow.roll_val = random;
+        order[3] = Blue.roll_val = random;
         break;
     case 3:
-        Green.roll_val = random;
-        Yellow.roll_val = random;
-        Blue.roll_val = random;
-        Red.roll_val = random;
-        int order[4] = {Green.roll_val, Yellow.roll_val, Blue.roll_val, Red.roll_val};
+        order[0] = Green.roll_val = random;
+        order[1] = Yellow.roll_val = random;
+        order[2] = Blue.roll_val = random;
+        order[3] = Red.roll_val = random;
         break;
-        // default:
+    // default:
         // break;
     }
 
@@ -150,6 +131,7 @@ int main(void)
     // arr[2] = roll(&value);
     // printf("%d", arr[2]);
     roll(0);
+    _start();
 
     // initBoardCells();
     // printf("%d", boardCell);
