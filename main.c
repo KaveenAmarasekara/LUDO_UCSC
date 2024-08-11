@@ -97,7 +97,7 @@ int roll(int player_id)
         Blue.roll_val = random;
         Red.roll_val = random;
         Green.roll_val = random;
-        order[] = {Yellow.roll_val, Blue.roll_val, Red.roll_val, Green.roll_val};
+        int order[4] = {Yellow.roll_val, Blue.roll_val, Red.roll_val, Green.roll_val};
         break;
     case 1:
         Blue.roll_val = random;
