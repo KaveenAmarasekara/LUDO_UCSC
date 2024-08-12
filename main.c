@@ -131,7 +131,7 @@ int main(void)
     // arr[2] = roll(&value);
     // printf("%d", arr[2]);
     roll(0);
-    _start();
+    _start(0);
 
     // initBoardCells();
     // printf("%d", boardCell);
