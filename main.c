@@ -138,7 +138,7 @@ void getRoundStarter()
     if (Yellow.roll_val == max){
         printf("Yellow player has the highest roll and will begin the game.\n");
         printf("The order of a single round is Yellow, Blue, Red, Green\n");
-        Yellow.id = 0;
+        id = 0;
     }
     else if (Blue.roll_val == max){
         printf("Blue player has the highest roll and will begin the game.\n");
