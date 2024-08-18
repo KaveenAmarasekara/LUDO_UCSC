@@ -3,9 +3,7 @@
 #include <time.h>
 #include <string.h>
 
-//#define random rand() % 6 + 1
-
-
+#define random(t) rand() % t + 1
 
 enum speBoardCell
 {
@@ -52,12 +50,12 @@ void initBoardCells()
 
     // return boardCell;
 }
-
+/*
 int random(short t){
     short value = rand() % t + 1;
     //printf("%d", value);
     return value;
-}
+}*/
 
 // sort any array
 void sort_arr(int arr[], int lenght)
