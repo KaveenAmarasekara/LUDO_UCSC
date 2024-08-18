@@ -3,7 +3,9 @@
 #include <time.h>
 #include <string.h>
 
-#define random rand() % 6 + 1
+//#define random rand() % 6 + 1
+
+
 
 enum speBoardCell
 {
@@ -14,21 +16,32 @@ enum speBoardCell
 
 struct player
 {
-    int id;
-    int roll_val;
-    int init_position;
-    int curr_position;
-    int Base;
-    int X;
-    int Approach;
+    short id;
+    short roll_val;
+
+    struct peice
+    {
+        short curr_position; 
+    } p1, p2, p3, p4;
+    
+    short Base;
+    short X;
+    short Approach;
     char color[8];
     
     //
 } Yellow, Blue, Red, Green;
 
+//begin of prototype
+int baseMove(struct player, struct player, struct player, struct player);
+int roll(struct player);
+int checkforsix(short val);
+//end of prototype
+
+
 void initBoardCells()
 {
-    int boardCell[52];
+    short boardCell[52];
     for (int i = 0; i < 52; i++)
     {
         boardCell[i] = i + 1;
@@ -38,6 +51,12 @@ void initBoardCells()
     enum speBoardCell currCell;
 
     // return boardCell;
+}
+
+int random(short t){
+    short value = rand() % t + 1;
+    //printf("%d", value);
+    return value;
 }
 
 // sort any array
@@ -67,51 +86,51 @@ void print_arr(int arr[], int length)
     printf("\n\n");
 }
 
-int roll(int* player_id)
-{
-    srand(time(0));
-    int order[4];
-    int x = *player_id;
-    switch (x)
-    {
-    case 0:
-        order[0] = Yellow.roll_val = random;
-        order[1] = Blue.roll_val = random;
-        order[2] = Red.roll_val = random;
-        order[3] = Green.roll_val = random;
-        break;
-    case 1:
-        order[0] = Blue.roll_val = random;
-        order[1] = Red.roll_val = random;
-        order[2] = Green.roll_val = random;
-        order[3] = Yellow.roll_val = random;
-        break;
-    case 2:
-        order[0] = Red.roll_val = random;
-        order[1] = Green.roll_val = random;
-        order[2] = Yellow.roll_val = random;
-        order[3] = Blue.roll_val = random;
-        break;
-    case 3:
-        order[0] = Green.roll_val = random;
-        order[1] = Yellow.roll_val = random;
-        order[2] = Blue.roll_val = random;
-        order[3] = Red.roll_val = random;
-        break;
-        // default:
-        // break;
-    }
+// int roll(int* player_id)
+// {
+//     srand(time(0));
+//     int order[4];
+//     int x = *player_id;
+//     switch (x)
+//     {
+//     case 0:
+//         order[0] = Yellow.roll_val = random;
+//         order[1] = Blue.roll_val = random;
+//         order[2] = Red.roll_val = random;
+//         order[3] = Green.roll_val = random;
+//         break;
+//     case 1:
+//         order[0] = Blue.roll_val = random;
+//         order[1] = Red.roll_val = random;
+//         order[2] = Green.roll_val = random;
+//         order[3] = Yellow.roll_val = random;
+//         break;
+//     case 2:
+//         order[0] = Red.roll_val = random;
+//         order[1] = Green.roll_val = random;
+//         order[2] = Yellow.roll_val = random;
+//         order[3] = Blue.roll_val = random;
+//         break;
+//     case 3:
+//         order[0] = Green.roll_val = random;
+//         order[1] = Yellow.roll_val = random;
+//         order[2] = Blue.roll_val = random;
+//         order[3] = Red.roll_val = random;
+//         break;
+//         // default:
+//         // break;
+//     }
 
-    int length = sizeof(order) / sizeof(order[0]);
+//     int length = sizeof(order) / sizeof(order[0]);
 
-    print_arr(order, length);
-}
+//     print_arr(order, length);
+// }
 
 int getMax()
 {
-    int arr[4] = {Yellow.roll_val, Blue.roll_val, Red.roll_val, Green.roll_val};
+    short arr[4] = {Yellow.roll_val, Blue.roll_val, Red.roll_val, Green.roll_val};
     int length = sizeof(arr) / sizeof(arr[0]);
-    int max = arr[0];
+    short max = arr[0];
     for (int k = 1; k <= length; k++)
     {
         if (max < arr[k])
@@ -122,48 +141,132 @@ int getMax()
     return max;
 }
 
+int isMaxDup(int max){
+    short arr[4] = {Yellow.roll_val, Blue.roll_val, Red.roll_val, Green.roll_val};
+    short count = 0;
+
+    for (int i = 0; i < 4; i++) {
+        if (arr[i] == max) {
+            count++;
+        }
+    }
+    // Check if there are two or more maximum elements
+    if (count >= 2) {
+        //printf("The array contains two maximum elements.\n");
+        return 1;
+    } else {
+        //printf("The array does not contain two maximum elements.\n");
+        return -1;
+    }
+}
+
 void getRoundStarter()
 {
-    roll(0);
-    int max = getMax();
+    {
+        Yellow.roll_val = random(6);
+        Blue.roll_val = random(6);
+        Red.roll_val = random(6);
+        Green.roll_val = random(6);
+    }
+
     {
         printf("Yellow rolls %d\n", Yellow.roll_val);
         printf("Blue rolls %d\n", Blue.roll_val);
         printf("Red rolls %d\n", Red.roll_val);
         printf("Green rolls %d\n\n", Green.roll_val);
-    } 
+    }
 
-    int id;
+    int max = getMax();
 
-    if (Yellow.roll_val == max){
-        printf("Yellow player has the highest roll and will begin the game.\n");
-        printf("The order of a single round is Yellow, Blue, Red, Green\n");
-        id = 0;
-    }
-    else if (Blue.roll_val == max){
-        printf("Blue player has the highest roll and will begin the game.\n");
-        printf("The order of a single round is Blue, Red, Green, Yellow\n");
-        Blue.id = 1;
-    }
-    else if (Red.roll_val == max){
-        printf("Red player has the highest roll and will begin the game.\n");
-        printf("The order of a single round is Red, Green, Yellow, Blue\n");
-        Red.id  = 2;
-    }
-    else if (Green.roll_val == max){
-        printf("Green player has the highest roll and will begin the game.\n");
-        printf("The order of a single round is Green, Yellow, Blue, Red\n");
-        Green.id = 3;
+    int maxDup = isMaxDup(max);
+
+    if(maxDup == -1){
+        short id;
+        if (Yellow.roll_val == max){
+            printf("Yellow player has the highest roll and will begin the game.\n");
+            printf("The order of a single round is Yellow, Blue, Red, Green\n");
+            id = 0;
+            baseMove(Yellow, Blue, Red, Green);        
+            
+        }
+        else if (Blue.roll_val == max){
+            printf("Blue player has the highest roll and will begin the game.\n");
+            printf("The order of a single round is Blue, Red, Green, Yellow\n");
+            id = 1;
+            baseMove(Blue, Red, Green, Yellow);        
+        }
+        else if (Red.roll_val == max){
+            printf("Red player has the highest roll and will begin the game.\n");
+            printf("The order of a single round is Red, Green, Yellow, Blue\n");
+            id  = 2;
+            baseMove(Red, Green, Yellow, Blue);        
+        }
+        else if (Green.roll_val == max){
+            printf("Green player has the highest roll and will begin the game.\n");
+            printf("The order of a single round is Green, Yellow, Blue, Red\n");
+            id = 3;
+            baseMove(Green, Yellow, Blue, Red);        
+        }
+    } else if (maxDup == 1)
+    {
+        printf("Multiple max values >> Rolling again...\n\n");
+        getRoundStarter();
     }
 }
 
+int baseMove(struct player x1, struct player x2, struct player x3, struct player x4){
+    printf("val:%d",roll(x1));
+    int val = roll(x1);
+    if (val == 6 && x1.p1.curr_position == -1){
+        x1.p1.curr_position = 2;
+        val = roll(x1);
+        if (roll(x1) == 6){
+            x1.p1.curr_position = 8;
+            val = roll(x1);
+            if (roll(x1) == 6){
+                x1.p1.curr_position = 8;
+            } else{
+                x1.p1.curr_position = x1.p1.curr_position + val;
+            }
+        } else{
+            x1.p1.curr_position = x1.p1.curr_position + val;
+        }
+    } else{
+        /* code */
+    }
+    
+
+    checkforsix(roll(x1));
+}
+
+int roll(struct player x){
+    x.roll_val = random(6);
+    return x.roll_val;
+}
 // first_move get the random dice value from the roll() and do a move for a peice
-int baseMove()
+int checkforsix(short val)
 {
-    // if( == 0){
-                                  
+
+    for (int six=0; six<3;six++){
+        if (1==1){
+            ;
+        };
+    }
+    return ;
+    {
+    // x.id =2;
+    // switch (2)
+    // {case 1:
+        
+    //     printf("fuck");
+    //     break;
+    
+    // default:
+    //     break;
     // }
+    }
 }
+
 
 int startGame(int game_state){
     if (!game_state){
@@ -184,14 +287,27 @@ int startGame(int game_state){
     return game_state;
 }
 
+
+
 int main(void)
 {
+    srand(time(0));
+
     if (startGame(0)){
         printf("Game started...\n\n");
     }
     else {
         printf("Hum, see ya next time...\n\n");
         return 0;
+    }
+
+    {
+        Yellow.roll_val, Blue.roll_val, Red.roll_val, Green.roll_val = 0;
+
+        Yellow.p1.curr_position, Yellow.p2.curr_position, Yellow.p3.curr_position, Yellow.p4.curr_position = -1;
+        Blue.p1.curr_position, Blue.p2.curr_position, Blue.p3.curr_position, Blue.p4.curr_position = -1;
+        Red.p1.curr_position, Red.p2.curr_position, Red.p3.curr_position, Red.p4.curr_position = -1;
+        Green.p1.curr_position, Green.p2.curr_position, Green.p3.curr_position, Green.p4.curr_position = -1;
     }
 
     {
@@ -202,28 +318,7 @@ int main(void)
     }
 
     getRoundStarter();
+    printf("struct: %d",checkforsix(2));
 
-
-
-
-    // int value = 4;
-    // int arr[4];
-    // arr[2] = roll(&value);
-    // printf("%d", arr[2]);
-    // pass orer before sort
-    //getRoundStarter(order, length);
-
-    // initBoardCells();
-    // printf("%d", boardCell);
-
-    /*struct players{
-        int id;
-        int p[] ;
-
-
-    }Red, Yellow, Green, Blue;
-    */
-    // const m 2;
-    //    int arr[m];
     return 0;
 }
