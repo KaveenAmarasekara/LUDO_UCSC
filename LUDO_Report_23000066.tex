@@ -1,0 +1,180 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\title{In-Depth Analysis of the LUDO Game Implementation in C}
+\author{Kaveen Amarasekara - 23000066}
+\date{1st September 2024}
+
+\begin{document}
+
+\maketitle
+
+\section*{1. Structures Used to Represent the Board and Pieces}
+
+In this C-based Ludo game, the core gameplay mechanics are integrated within several key structures defined in the \texttt{types.h} file. These structures are essential for representing the state of the game and managing the interactions between the various game elements.
+
+\subsection*{a. Enumerations}
+
+\begin{itemize}
+    \item \textbf{Color Enumeration:}
+    \begin{itemize}
+        \item The \texttt{Color} enum is a simple yet effective way to distinguish between the four players in the game. It includes the values \texttt{YELLOW}, \texttt{BLUE}, \texttt{RED}, and \texttt{GREEN}. This enumeration ensures that each player and their respective pieces can be easily identified and processed within the game logic.
+    \end{itemize}
+
+    \item \textbf{Status Enumeration:}
+    \begin{itemize}
+        \item The \texttt{Status} enum represents the various states a piece can be in during the game. The possible statuses include:
+        \begin{itemize}
+            \item \texttt{IN\_BASE}: Indicates that the piece has not yet been moved onto the board.
+            \item \texttt{IN\_X}: Represents the start position X state of the player.
+            \item \texttt{ON\_PATH}: The piece is actively moving along the board's path.
+            \item \texttt{IN\_HOME}: The piece has reached the player's home area.
+            \item \texttt{HOME\_STR}: Represents the piece's position within the home straight towards home.
+            \item \texttt{ON\_APPROACH}: Indicates the piece is on the approach cell.
+        \end{itemize}
+        \item By using this enumeration, the program can easily manage and update the state of each piece as the game progresses.
+    \end{itemize}
+
+    \item \textbf{Direction Enumeration:}
+    \begin{itemize}
+        \item The \texttt{Direction} enum provides the direction of movement for a piece, with values \texttt{Clockwise} and \texttt{Counter\_Clockwise}. This is particularly useful in games where direction matters, such as when pieces might move differently depending on specific rules or special board conditions.
+        \item \textit{Note:} Though this enum exists, logic for counterclockwise movement was not implemented.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{b. Piece Structure}
+
+The \texttt{Piece} structure is one of the main parts of the game, encapsulating all the necessary attributes for each game piece:
+
+\begin{itemize}
+    \item \textbf{Attributes:}
+    \begin{itemize}
+        \item \texttt{int id}: A unique identifier for each piece, allowing the game to track and manage individual pieces effectively.
+        \item \texttt{Color color}: The color associated with the piece, linking it to a specific player, included in the \texttt{Color} enum.
+        \item \texttt{Status status}: The current state of the piece, as described by the \texttt{Status} enum.
+        \item \texttt{int position}: The piece's position on the board, critical for determining movement and interactions with other pieces.
+        \item \texttt{Direction direction}: The direction in which the piece is moving, influencing how the piece progresses along the board as per the \texttt{Direction} enum.
+        \item \texttt{int capture\_count}: A count of how many times the piece has captured other pieces, which could influence scoring or other gameplay elements.
+    \end{itemize}
+\end{itemize}
+
+This structure is designed to encapsulate all relevant aspects of a game piece, making it easy to implement complex game logic while maintaining clarity and organization in the code.
+
+\subsection*{c. Player Structure}
+
+This structure includes all necessary elements for each player:
+
+\begin{itemize}
+    \item \texttt{Color color}: The color associated with the player, linking it to a specific player, included in the \texttt{Color} enum.
+    \item \texttt{int num\_pieces\_on\_board}: The number of pieces on the board at an instance.
+    \item \texttt{int num\_pieces\_in\_base}: The number of pieces in the base at an instance.
+    \item \texttt{int num\_pieces\_in\_home}: The number of pieces in the home after the round.
+    \item \texttt{int approach\_position}: The approach cell value for each player:
+    \begin{itemize}
+        \item Yellow: 0+52 = 52
+        \item Blue: 13+52 = 65
+        \item Red: 26+52 = 78
+        \item Green: 39+52 = 91
+    \end{itemize}
+    \item \texttt{Piece pieces[NUM\_PIECES]}: Initializes 4 \texttt{Piece} structs within the player.
+\end{itemize}
+
+\section*{2. Functions Used in the Program}
+
+\begin{enumerate}
+    \item \texttt{const char* colorToString(Color color);}
+    \begin{itemize}
+        \item This function returns the relevant color string according to the player’s color using the \texttt{Color} enum.
+    \end{itemize}
+
+    \item \texttt{void initializePlayers(Player players[NUM\_PLAYERS]);}
+    \begin{itemize}
+        \item This function initializes 4 players and their 16 pieces' attributes.
+    \end{itemize}
+
+    \item \texttt{void initializeBoard(Board *board);}
+    \begin{itemize}
+        \item This function initializes the mystery cell for a game round.
+    \end{itemize}
+
+    \item \texttt{void printBoard(Board *board);}
+    \item \texttt{void printPlayerStatus(Player players[NUM\_PLAYERS]);}
+    \begin{itemize}
+        \item These two functions print the players’ pieces and board (mystery cell) status after each round.
+    \end{itemize}
+
+    \item \texttt{void printMysteryCellStatus(Board *board);}
+    \begin{itemize}
+        \item This function prints the mystery cell position.
+    \end{itemize}
+
+    \item \texttt{int rollDice();}
+    \begin{itemize}
+        \item This function uses the \texttt{rand()} function to return a dice value between 1 and 6.
+    \end{itemize}
+
+    \item \texttt{void movePiece(Player *player, int pieceIndex, int diceValue, Board *board);}
+    \begin{itemize}
+        \item This function includes the core logic for moving pieces after retrieving player behavior through relevant functions.
+    \end{itemize}
+
+    \item \texttt{void handleMysteryCell(Piece *piece, Board *board);}
+    \begin{itemize}
+        \item After a piece moves, this function checks for any mystery cell activity.
+    \end{itemize}
+
+    \item \texttt{void redPlayerBehavior(Player *player, Board *board, int diceValue);}
+    \item \texttt{void greenPlayerBehavior(Player *player, Board *board, int diceValue);}
+    \item \texttt{void yellowPlayerBehavior(Player *player, Board *board, int diceValue);}
+    \item \texttt{void bluePlayerBehavior(Player *player, Board *board, int diceValue);}
+    \begin{itemize}
+        \item These four functions contain the core player behaviors. They are similar for all players and call the \texttt{movePiece()} function after defining player behaviors.
+    \end{itemize}
+
+    \item \texttt{int determineFirstPlayer(Player players[NUM\_PLAYERS]);}
+    \begin{itemize}
+        \item This function ensures the first player rolls the dice throughout a game and determines the order for the rest.
+    \end{itemize}
+\end{enumerate}
+
+\section*{3. Justification for the Used Structures}
+
+The use of these specific structures and enumerations is well-justified for several reasons:
+
+\subsection*{a. Ensuring Data Integrity and Readability}
+
+\begin{itemize}
+    \item \textbf{Enumerations for Fixed Categories:}
+    \begin{itemize}
+        \item Using enums for \texttt{Color}, \texttt{Status}, and \texttt{Direction} ensures that only valid values are assigned to these attributes. This not only enhances the readability of the code but also prevents errors that might occur if arbitrary integers or strings were used instead.
+    \end{itemize}
+
+    \item \textbf{Encapsulation in the \texttt{Piece} Structure:}
+    \begin{itemize}
+        \item The \texttt{Piece} structure encapsulates all attributes related to a single game piece. By grouping related data together, the structure makes it easier to manage and manipulate pieces within the game logic.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{b. Simplifying Game Logic Implementation}
+
+\begin{itemize}
+    \item \textbf{Modular Design:}
+    \begin{itemize}
+        \item By dividing the game logic into different functions that operate on well-defined structures, the code becomes more modular. This modularity makes it easier to understand, test, and debug individual parts of the game.
+    \end{itemize}
+
+    \item \textbf{Clear Abstraction Layers:}
+    \begin{itemize}
+        \item The game logic is clearly separated from the underlying data structures. This separation allows for easy updates or modifications to the game rules without requiring significant changes to the data structures.
+    \end{itemize}
+\end{itemize}
+
+\section*{4. Conclusion}
+
+This C-based Ludo game implementation leverages structures and enumerations to effectively represent the game state and manage game logic. By using well-defined structures like \texttt{Piece}, \texttt{Player}, and \texttt{Board}, as well as enumerations for fixed categories, the code achieves clarity, maintainability, and scalability. The modular design and clear abstraction layers further contribute to the robustness of the implementation, making it easier to extend or modify the game in the future.
+
+\end{document}
